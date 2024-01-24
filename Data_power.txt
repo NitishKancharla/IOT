@@ -1,0 +1,3 @@
+Vtg= 3299 mV
+Crt= 6 mA
+Pow= 19794 mW

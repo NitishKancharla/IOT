@@ -1,0 +1,133 @@
+//ardu code
+
+
+#include <SoftwareSerial.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27,16,2);
+
+
+
+int sensorValue = A0; //voltage
+int sensor_Value = A1; //current
+SoftwareSerial espSerial(5, 6);
+
+
+String str, str1;
+
+
+int P, V, I;
+void setup(){
+Serial.begin(9600);
+   lcd.init();
+  lcd.backlight();
+
+
+pinMode(8, OUTPUT);
+
+
+pinMode(9, OUTPUT);
+pinMode(10, OUTPUT);
+pinMode(11, OUTPUT);
+ 
+Serial.begin(115200);
+espSerial.begin(115200);
+//dht.begin();
+delay(2000);
+}
+
+
+
+void loop()
+{
+  digitalWrite(8, HIGH);
+ 
+  sensorValue = analogRead(sensorValue);       // read analog input pin 0
+sensor_Value = analogRead(sensor_Value);
+
+
+lcd.clear();
+lcd.setCursor(0,0);
+lcd.print("Vtg: ");
+lcd.setCursor(5,0);
+lcd.print(sensorValue);
+lcd.print(" V");
+delay(3000);
+
+
+Serial.print("Vtg= ");
+Serial.print(sensorValue);               // prints the value read
+Serial.println(" V");
+delay(1000); // wait 100ms for next reading
+V = sensorValue;
+
+
+lcd.clear();
+lcd.setCursor(0,1);
+lcd.print("Crt: ");
+lcd.setCursor(5,1);
+lcd.print(sensor_Value);
+lcd.print(" A");
+delay(3000);
+
+
+Serial.print("Crt= ");
+Serial.print(sensor_Value);               // prints the value read
+Serial.println(" A");
+delay(1000); // wait 100ms for next reading
+I = sensor_Value;
+
+
+
+P = V * I;
+
+
+lcd.clear();
+lcd.setCursor(10,0);
+lcd.print("Pow: ");
+lcd.setCursor(10,0);
+lcd.print(P);
+lcd.print(" W");
+delay(3000);
+
+
+Serial.print("Pow= ");
+Serial.print(P);               // prints the value read
+Serial.println(" W");
+delay(1000); // wait 100ms for next reading
+
+
+if(sensorValue>5)
+{
+  digitalWrite(9, HIGH);
+ delay(2000);
+ digitalWrite(10, LOW);
+  digitalWrite(11, LOW);
+   Serial.println("Over Voltage");
+}
+else if(sensorValue>3 && sensorValue<5){
+  digitalWrite(10, HIGH);
+  delay(2000);
+  digitalWrite(9, LOW);
+  digitalWrite(11, LOW);
+  Serial.println("NORMAL");
+ }
+else {
+  digitalWrite(11, HIGH);
+  delay(2000);
+  digitalWrite(9, LOW);
+  digitalWrite(10, LOW);
+  Serial.println("Low Voltage");
+}
+
+
+str =String("coming from arduino: ")+String("Voltage ")+String(sensorValue)+String(" V");
+espSerial.println(str);
+delay(1000);
+str1 =String("coming from arduino: ")+String("Current ")+String(sensor_Value)+String(" A");
+espSerial.println(str1);
+delay(1000);
+
+
+
+}
